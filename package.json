@@ -1,0 +1,9 @@
+{
+  "name": "mcp-claude-usage",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0"
+  }
+}
