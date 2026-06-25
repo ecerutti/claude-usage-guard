@@ -3,6 +3,12 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+if [ "${1:-}" = "--reinstall" ]; then
+  echo "Reinstalling: running uninstall first..."
+  bash "$SCRIPT_DIR/uninstall.sh" || true
+  echo ""
+fi
+
 # Detect node with absolute path (handles nvm, asdf, and non-standard installs)
 NODE_BIN=$(command -v node 2>/dev/null || command -v nodejs 2>/dev/null || true)
 if [ -z "$NODE_BIN" ]; then
