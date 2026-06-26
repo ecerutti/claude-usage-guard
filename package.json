@@ -1,8 +1,49 @@
 {
-  "name": "mcp-claude-usage",
+  "name": "claude-usage-guard",
   "version": "1.0.0",
+  "description": "MCP server that exposes Claude Code's real-time rate limit usage so orchestrators can check remaining capacity before launching subtasks.",
   "type": "module",
   "main": "index.js",
+  "bin": {
+    "claude-usage-guard": "index.js",
+    "claude-usage-guard-statusline": "scripts/usage-capture.cjs"
+  },
+  "files": [
+    "index.js",
+    "lib/",
+    "scripts/usage-capture.cjs",
+    "setup.sh",
+    "uninstall.sh",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "claude-code",
+    "rate-limit",
+    "usage",
+    "orchestrator",
+    "agents"
+  ],
+  "author": "Esteban Cerutti <esteban.cerutti@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/ecerutti/claude-usage-guard#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ecerutti/claude-usage-guard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ecerutti/claude-usage-guard/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0"
   }

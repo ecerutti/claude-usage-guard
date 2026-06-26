@@ -45,8 +45,8 @@ else
   echo "  settings.json not found (skipping)"
 fi
 
-# 3. Remove capture script
-rm -f "$HOME/.claude/scripts/usage-capture.js"
+# 3. Remove capture script (and any legacy .js copy from older versions)
+rm -f "$HOME/.claude/scripts/usage-capture.cjs" "$HOME/.claude/scripts/usage-capture.js"
 echo "✓ Capture script removed"
 
 # 4. Remove state file

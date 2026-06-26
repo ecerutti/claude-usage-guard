@@ -1,5 +1,9 @@
 # claude-usage-guard
 
+[![CI](https://github.com/ecerutti/claude-usage-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/ecerutti/claude-usage-guard/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
+
 An MCP server that exposes Claude Code's real-time rate limit usage so that an orchestrator (Leader agent) can check remaining capacity before launching subtasks — and pause when approaching limits rather than failing mid-workflow.
 
 ## The problem
@@ -10,7 +14,7 @@ Claude Code enforces two rate limit windows: a 5-hour session window and a 7-day
 
 Two components work together:
 
-**1. statusLine capture script** (`scripts/usage-capture.js`)  
+**1. statusLine capture script** (`scripts/usage-capture.cjs`)  
 Registered as Claude Code's `statusLine` command. Receives the internal JSON that Claude Code passes after each response — which includes the parsed `anthropic-ratelimit-*` headers — and persists the rate limit data to `~/.claude/usage_state.json`.
 
 **2. MCP server** (`index.js`)  
@@ -21,6 +25,33 @@ Exposes a single tool `check_usage_limits` that reads `~/.claude/usage_state.jso
 ## Installation
 
 **Requirements:** Node.js 18+, Claude Code CLI
+
+### Option A — npm (recommended)
+
+```bash
+npm install -g claude-usage-guard
+```
+
+Register the MCP server at user scope:
+
+```bash
+claude mcp add --transport stdio --scope user usage-guard -- claude-usage-guard
+```
+
+Then add the `statusLine` entry to `~/.claude/settings.json`:
+
+```json
+"statusLine": {
+  "type": "command",
+  "command": "claude-usage-guard-statusline"
+}
+```
+
+> If Claude Code can't find the command (e.g. you use nvm and its bin dir isn't
+> on Claude Code's PATH), use the absolute path printed by `which claude-usage-guard`
+> / `which claude-usage-guard-statusline` instead.
+
+### Option B — git clone + setup script
 
 ```bash
 git clone https://github.com/ecerutti/claude-usage-guard.git
@@ -33,12 +64,13 @@ The setup script:
 - Copies the capture script to `~/.claude/scripts/`
 - Registers the MCP server at user scope (`claude mcp add --scope user`)
 
-Then add the `statusLine` entry to `~/.claude/settings.json` manually (the setup script prints the exact snippet to add).
+Then add the `statusLine` entry to `~/.claude/settings.json` manually (the setup script prints the exact snippet to add). To remove everything later, run `bash uninstall.sh`.
 
-Verify with:
+### Verify
+
 ```bash
 claude mcp list
-# → usage-guard: node /path/to/index.js - ✔ Connected
+# → usage-guard: ... - ✔ Connected
 ```
 
 ## Tool output
@@ -91,6 +123,12 @@ after a reset if you need to pause mid-workflow.
 - **Fail-open.** If data is unavailable, the tool returns null fields rather than blocking — the orchestrator decides what to do with missing information.
 - **statusLine is the only reliable source.** Scraping claude.ai is blocked by Cloudflare. The `rate_limits` field in the statusLine JSON is the only official, non-fragile way to access this data from outside the API layer.
 
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for how to set
+up the project, run the tests (`npm test`), and open a pull request. For security
+issues, see [SECURITY.md](SECURITY.md).
+
 ## License
 
-MIT
+[MIT](LICENSE) © Esteban Cerutti
